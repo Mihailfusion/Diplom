@@ -7,9 +7,19 @@ function form() {
 
 
   	let forms = document.querySelectorAll('.form, .main_form'),
-  	  input = document.getElementsByTagName('input'),
+			input = document.getElementsByTagName('input'),
+			inputTel = document.getElementsByName('user_phone'),
   	  statusMessage = document.createElement('div');
-  	statusMessage.classList.add('status');
+		statusMessage.classList.add('status');
+ 
+
+		  inputTel.forEach((elem) => {
+		  			elem.onkeyup = () => {
+			 elem.value = elem.value.replace(/[^(\d)|(,)?+]/g, "");
+			 
+		 };
+	});
+
 
   	function sendForm(elem) {
   	  elem.addEventListener('submit', function (e) {
