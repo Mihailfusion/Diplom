@@ -12,15 +12,18 @@ function form() {
   	  statusMessage = document.createElement('div');
 		statusMessage.classList.add('status');
  
-
-		  inputTel.forEach((elem) => {
-		  			elem.onkeyup = () => {
-			 elem.value = elem.value.replace(/[^(\d)|(,)?+]/g, "");
+			for (let i = 0; i < inputTel.length; i++) {
+				inputTel[i].onkeyup = () => {
+				inputTel[i].value = inputTel[i].value.replace(/[^(\d)|(,)?+]/g, "");
+				
+			};
+		}
+	// 	  inputTel.forEach((elem) => {
+	// 	  elem.onkeyup = () => {
+	// 		elem.value = elem.value.replace(/[^(\d)|(,)?+]/g, "");
 			 
-		 };
-	});
-
-
+	// 	 };
+	// });
   	function sendForm(elem) {
   	  elem.addEventListener('submit', function (e) {
   	    e.preventDefault();
