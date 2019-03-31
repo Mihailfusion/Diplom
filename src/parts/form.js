@@ -62,7 +62,10 @@ function form() {
   	      for (let i = 0; i < input.length; i++) {
   	        input[i].value = '';
   	      }
-  	    }
+				}
+				setTimeout(() => {
+					statusMessage.textContent = '';
+				},3000);
   	    postData(formData)
   	      .then(() => statusMessage.textContent = message.loading)
   	      .then(() => {

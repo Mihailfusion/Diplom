@@ -235,6 +235,9 @@ function form() {
         }
       }
 
+      setTimeout(function () {
+        statusMessage.textContent = '';
+      }, 3000);
       postData(formData).then(function () {
         return statusMessage.textContent = message.loading;
       }).then(function () {
