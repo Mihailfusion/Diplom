@@ -7,12 +7,14 @@ function timePopup() {
     phonelink1 = document.getElementsByClassName('phone_link')[1];
 
 
-  phonelink.addEventListener('click', function () {
+  phonelink.addEventListener('click', function (e) {
+     e.preventDefault();
     popup.style.display = 'flex';
-  });
-  phonelink1.addEventListener('click', function () {
+  }, false);
+  phonelink1.addEventListener('click', function (e) {
+     e.preventDefault();
     popup.style.display = 'flex';
-  });
+  }, false);
   close.addEventListener('click', function () {
     popup.style.display = 'none';
   });
@@ -22,9 +24,9 @@ function timePopup() {
     }
   });
 
-  // setTimeout(() => {
-  //   popup.style.display = 'flex';
-  // }, 60000);
+  setTimeout(() => {
+    popup.style.display = 'flex';
+  }, 60000);
 
 }
 
