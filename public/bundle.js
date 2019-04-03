@@ -11817,7 +11817,6 @@ function forms(windowSettings) {
       event.preventDefault();
       form.appendChild(statusMessage);
       var formData = new FormData(form);
-      statusMessage.innerHTML = "<img src=\"img/ajax-loader.gif\" alt=\"loader\" style=\"margin-top: 20px;\">";
       statusMessage.style.paddingBottom = '20px';
       postData(formData, object).then(function () {
         statusMessage.style.color = 'green';
