@@ -11824,7 +11824,7 @@ function forms(windowSettings) {
       }).catch(function () {
         statusMessage.style.color = 'red';
         statusMessage.innerHTML = "ПРОИЗОШЛА ОШИБКА!<br>Попробуйте, пожалуйста, позже.";
-      }).then(clearInput(curentFormInputs)).then(clearObject(object));
+      }).then(clearInput(curentFormInputs)).then(object = {});
     });
   }
 
@@ -11868,10 +11868,6 @@ function forms(windowSettings) {
     for (var i = 0; i < inputs.length; i++) {
       inputs[i].value = '';
     }
-  }
-
-  function clearObject(object) {
-    object = {};
   }
 }
 

@@ -17,7 +17,7 @@ function forms(windowSettings) {
 	sendForm(popupCalcEndForms, windowSettings);
 
 	function sendForm(form, object = null) {
-		const statusMessage = document.createElement('div'),
+		let statusMessage = document.createElement('div'),
 			curentFormInputs = form.querySelectorAll('input');
 
 		form.addEventListener('submit', event => {
@@ -35,8 +35,10 @@ function forms(windowSettings) {
 					statusMessage.innerHTML = "ПРОИЗОШЛА ОШИБКА!<br>Попробуйте, пожалуйста, позже.";
 				})
 				.then(clearInput(curentFormInputs))
-				.then(clearObject(object));
+				.then(object = {});	
 		});
+
+
 	}
 	function postData(data, object = null) {
 		return new Promise(function (resolve, reject) {
@@ -74,9 +76,6 @@ function forms(windowSettings) {
 		}
 	}
 
-	function clearObject(object) {
-		object = {};
-	}
 }
 
 module.exports = forms;
