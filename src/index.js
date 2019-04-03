@@ -15,13 +15,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
     modal = require('./parts/modal.js');
 
-  timer();
-  modal();
-  timePopup();
+    // calc();
+    timer();
+    modal();
+    timePopup();
+    let windowSettings = calc();
+    form(windowSettings);
   tabs();
-  form();
   images();
-  calc();
+  console.log(windowSettings);
+  
 
 });
 

@@ -1556,15 +1556,17 @@ window.addEventListener("DOMContentLoaded", function () {
       form = __webpack_require__(/*! ./parts/form.js */ "./parts/form.js"),
       images = __webpack_require__(/*! ./parts/images.js */ "./parts/images.js"),
       calc = __webpack_require__(/*! ./parts/calc.js */ "./parts/calc.js"),
-      modal = __webpack_require__(/*! ./parts/modal.js */ "./parts/modal.js");
+      modal = __webpack_require__(/*! ./parts/modal.js */ "./parts/modal.js"); // calc();
+
 
   timer();
   modal();
   timePopup();
+  var windowSettings = calc();
+  form(windowSettings);
   tabs();
-  form();
   images();
-  calc();
+  console.log(windowSettings);
 });
 
 if ('NodeList' in window && !NodeList.prototype.forEach) {
@@ -1680,37 +1682,90 @@ if (!Array.from) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var calc = function calc() {// let glazingPriceBtn = document.querySelectorAll('.glazing_price_btn'),
-  //   glazing = document.querySelector('.glazing'),
-  //   popupCalc = document.querySelector('.popup_calc'),
-  //   popupCalcClose = document.querySelector('.popup_calc_close'),
-  //   balconIcons = document.querySelector('.balcon_icons');
-  // glazing.addEventListener('click', (event) => { 
-  //   if (event.target.classList.contains('glazing_price_btn')) {
-  //     popupCalc.style.display = 'flex';
-  //   }
-  // });
-  // popupCalc.addEventListener('click', (event) => {
-  //       if (event.target == popupCalc) {
-  //         popupCalc.style.display = 'none';
-  //       }
-  //     });
-  // popupCalcClose.addEventListener('click', function () {
-  //   popupCalc.style.display = 'none';
-  // });
-  // balconIcons.addEventListener('click', (event) => {
-  //   let t = balconIcons.querySelectorAll('img'),
-  //   obj = [];
-  //   for (let i = 0; i < t.length; i++) {
-  //     t[i].classList.remove('do_image_more');
-  //     obj = t[i];
-  //     console.log(obj);
-  //   }
-  //   if (event.target !== balconIcons) {
-  //     event.target.classList.add('do_image_more');
-  //   }
-  //     // popupCalc.style.display = 'flex';
-  // });
+var calc = function calc() {
+  var popupCalcBtn = document.querySelectorAll('.popup_calc_btn'),
+      popupCalc = document.querySelector('.popup_calc'),
+      balconIcons = document.querySelectorAll('.balcon_icons a'),
+      bigImg = document.querySelectorAll('.big_img img'),
+      popupCalcButton = document.querySelector('.popup_calc_button'),
+      popupCalcProfile = document.querySelector('.popup_calc_profile'),
+      popupCalcProfileButton = document.querySelector('.popup_calc_profile_button'),
+      popupCalcSelect = document.querySelector('select'),
+      popupCalcLabel = popupCalcProfile.querySelectorAll('label');
+  var windowSettings = {};
+  popupCalcBtn.forEach(function (element) {
+    element.addEventListener('click', function () {
+      popupCalc.style.display = "block";
+      windowSettings.type = balconIcons[0].getAttribute('class');
+    });
+  });
+  balconIcons.forEach(function (element) {
+    element.addEventListener('click', function (event) {
+      balconIcons.forEach(function (img) {
+        img.querySelector('img').classList.remove('do_image_more');
+      });
+      event.preventDefault();
+      var typeWindowCalc = event.target.parentNode.getAttribute('class');
+      bigImg.forEach(function (el) {
+        var typeSelectedWindow = el.getAttribute('id');
+
+        if (typeSelectedWindow == typeWindowCalc) {
+          el.style.display = 'inline-block';
+          windowSettings.type = typeWindowCalc;
+        } else {
+          el.style.display = 'none';
+        }
+      });
+      element.querySelector('img').classList.add('do_image_more');
+    });
+  });
+  popupCalcInput.forEach(function (input) {
+    input.addEventListener('keyup', function () {
+      this.value = this.value.replace(/[^0-9]+/g, '');
+    });
+  });
+  popupCalcButton.addEventListener('click', function () {
+    if (popupCalcInput[0].value && popupCalcInput[1].value) {
+      popupCalc.style.display = 'none';
+      popupCalcProfile.style.display = 'block';
+      windowSettings.width = popupCalcInput[0].value;
+      popupCalcInput[0].value = '';
+      windowSettings.heigh = popupCalcInput[1].value;
+      popupCalcInput[1].value = '';
+      windowSettings.glazingType = popupCalcSelect.options[0].value;
+    } else {
+      popupCalcInput.forEach(function (input) {
+        if (!input.value) {
+          input.focus();
+        }
+      });
+    }
+  });
+  popupCalcSelect.addEventListener('change', function () {
+    windowSettings.glazingType = this.options[this.selectedIndex].value;
+  });
+  popupCalcLabel.forEach(function (label) {
+    label.addEventListener('change', function (event) {
+      if (event.target.classList.contains('checkbox')) {
+        [].slice.call(document.querySelectorAll('.checkbox')).forEach(function (c) {
+          return c.checked = false;
+        });
+        event.target.checked = true;
+      }
+
+      windowSettings.glazingProfile = label.querySelector('.checkbox-custom').getAttribute('id');
+    });
+  });
+  popupCalcProfileButton.addEventListener('click', function () {
+    if (windowSettings.glazingProfile) {
+      popupCalcProfile.style.display = 'none';
+      popupCalcEnd.style.display = 'block';
+      document.querySelectorAll('.checkbox').forEach(function (c) {
+        return c.checked = false;
+      });
+    }
+  });
+  return windowSettings;
 };
 
 module.exports = calc;
@@ -1726,17 +1781,8 @@ module.exports = calc;
 
 var _Promise = typeof Promise === 'undefined' ? __webpack_require__(/*! es6-promise */ "../node_modules/es6-promise/dist/es6-promise.js").Promise : Promise;
 
-function form() {
-  var message = {
-    loading: 'Загрузка',
-    success: 'Спасибо! Скоро мы с вами свяжемся!',
-    failure: 'Что-то пошло не так...'
-  };
-  var forms = document.querySelectorAll('.form, .main_form'),
-      input = document.getElementsByTagName('input'),
-      inputTel = document.getElementsByName('user_phone'),
-      statusMessage = document.createElement('div');
-  statusMessage.classList.add('status');
+function form(windowSettings) {
+  var inputTel = document.getElementsByName('user_phone');
 
   var _loop = function _loop(i) {
     inputTel[i].onkeyup = function () {
@@ -1746,68 +1792,85 @@ function form() {
 
   for (var i = 0; i < inputTel.length; i++) {
     _loop(i);
-  } // 	  inputTel.forEach((elem) => {
-  // 	  elem.onkeyup = () => {
-  // 		elem.value = elem.value.replace(/[^(\d)|(,)?+]/g, "");
-  // 	 };
-  // });
+  }
 
+  var freeMasterForms = document.querySelectorAll('.main_form');
+  freeMasterForms.forEach(function (form) {
+    sendForm(form);
+  });
+  var popupForm = document.querySelector('.popup form');
+  sendForm(popupForm);
+  var popupEngineerForm = document.querySelector('.popup_engineer form');
+  sendForm(popupEngineerForm);
+  var popupCalcEndForms = document.querySelector('.popup_calc_end form');
+  sendForm(popupCalcEndForms, windowSettings);
 
-  function sendForm(elem) {
-    elem.addEventListener('submit', function (e) {
-      e.preventDefault();
-      elem.appendChild(statusMessage);
-      var formData = new FormData(elem);
-      var obj = {};
-      formData.forEach(function (value, key) {
-        obj[key] = value;
-      });
-      var json = JSON.stringify(obj);
-
-      function postData() {
-        return new _Promise(function (resolve, reject) {
-          var request = new XMLHttpRequest();
-          request.open('POST', './server.php');
-          request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-
-          request.onreadystatechange = function () {
-            if (request.readyState < 4) {
-              resolve();
-            } else if (request.readyState === 4) {
-              if (request.status == 200 && request.status < 300) {
-                resolve();
-              } else {
-                reject();
-              }
-            }
-          };
-
-          request.send(json);
-        });
-      }
-
-      function clearInput() {
-        for (var i = 0; i < input.length; i++) {
-          input[i].value = '';
-        }
-      }
-
+  function sendForm(form) {
+    var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var statusMessage = document.createElement('div'),
+        curentFormInputs = form.querySelectorAll('input');
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      form.appendChild(statusMessage);
+      var formData = new FormData(form);
+      postData(formData, object).then(function () {
+        statusMessage.style.color = 'green';
+        statusMessage.innerHTML = "ЗАЯВКА ОТПРАВЛЕНА<br> Мы перезвоним Вам в течении 10 минут!";
+      }).catch(function () {
+        statusMessage.style.color = 'red';
+        statusMessage.innerHTML = "ПРОИЗОШЛА ОШИБКА!<br>Попробуйте, пожалуйста, позже.";
+      }).then(clearInput(curentFormInputs)).then(clearObject(object));
       setTimeout(function () {
         statusMessage.textContent = '';
       }, 3000);
-      postData(formData).then(function () {
-        return statusMessage.textContent = message.loading;
-      }).then(function () {
-        statusMessage.textContent = message.success;
-      }).catch(function () {
-        return statusMessage.textContent = message.failure;
-      }).then(clearInput);
     });
   }
 
-  Array.from(forms).forEach(function (form) {
-    sendForm(form);
-  });
+  function postData(data) {
+    var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    return new _Promise(function (resolve, reject) {
+      var request = new XMLHttpRequest();
+      request.open('POST', 'server.php');
+      request.setRequestHeader('Content-Type', 'aplication/json charset=utf-8');
+      var json = formDataToJSON(data, object);
+
+      request.onreadystatechange = function () {
+        if (request.readyState == 4) {
+          if (request.status == 200) {
+            resolve();
+          } else {
+            reject();
+          }
+        }
+      };
+
+      request.send(json);
+    });
+  }
+
+  function formDataToJSON(formData) {
+    var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var obj = {};
+    formData.forEach(function (value, key) {
+      obj[key] = value;
+    });
+
+    if (object) {
+      return JSON.stringify(Object.assign(object, obj));
+    } else {
+      return JSON.stringify(obj);
+    }
+  }
+
+  function clearInput(inputs) {
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].value = '';
+    }
+  }
+
+  function clearObject(object) {
+    object = {};
+  }
 }
 
 module.exports = form;

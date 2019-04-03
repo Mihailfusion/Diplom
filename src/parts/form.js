@@ -1,88 +1,102 @@
-function form() {
-  	let message = {
-  	  loading: 'Загрузка',
-  	  success: 'Спасибо! Скоро мы с вами свяжемся!',
-  	  failure: 'Что-то пошло не так...'
-  	};
-
-
-  	let forms = document.querySelectorAll('.form, .main_form'),
-			input = document.getElementsByTagName('input'),
-			inputTel = document.getElementsByName('user_phone'),
-  	  statusMessage = document.createElement('div');
-		statusMessage.classList.add('status');
+function form(windowSettings) {
  
+			
+			let	inputTel = document.getElementsByName('user_phone');
 			for (let i = 0; i < inputTel.length; i++) {
 				inputTel[i].onkeyup = () => {
 				inputTel[i].value = inputTel[i].value.replace(/[^(\d)|(,)?+]/g, "");
 				
 			};
 		}
-	// 	  inputTel.forEach((elem) => {
-	// 	  elem.onkeyup = () => {
-	// 		elem.value = elem.value.replace(/[^(\d)|(,)?+]/g, "");
-			 
-	// 	 };
-	// });
-  	function sendForm(elem) {
-  	  elem.addEventListener('submit', function (e) {
-  	    e.preventDefault();
-  	    elem.appendChild(statusMessage);
-        let formData = new FormData(elem);
-            let obj = {};
 
-             formData.forEach(function (value, key) {
-               obj[key] = value;
-             });
-             let json = JSON.stringify(obj);
 
-  	    function postData() {
-  	      return new Promise(function (resolve, reject) {
 
-  	        let request = new XMLHttpRequest();
 
-  	        request.open('POST', './server.php');
+	const freeMasterForms = document.querySelectorAll('.main_form');
+	freeMasterForms.forEach(form => {
+		sendForm(form);
+	});
 
-  	        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+	const popupForm = document.querySelector('.popup form');
+	sendForm(popupForm);
 
-  	        request.onreadystatechange = function () {
-  	          if (request.readyState < 4) {
-  	            resolve();
-  	          } else if (request.readyState === 4) {
-  	            if (request.status == 200 && request.status < 300) {
-  	              resolve();
-  	            } else {
-  	              reject();
-  	            }
-  	          }
-  	        };
 
-  	        request.send(json);
-  	      });
-  	    }
+	const popupEngineerForm = document.querySelector('.popup_engineer form');
+	sendForm(popupEngineerForm);
 
-  	    function clearInput() {
-  	      for (let i = 0; i < input.length; i++) {
-  	        input[i].value = '';
-  	      }
-				}
+	
+	const popupCalcEndForms = document.querySelector('.popup_calc_end form');
+	sendForm(popupCalcEndForms, windowSettings);
+
+	function sendForm(form, object = null) {
+		const statusMessage = document.createElement('div'),
+			curentFormInputs = form.querySelectorAll('input');
+
+		form.addEventListener('submit', event => {
+			event.preventDefault();
+			form.appendChild(statusMessage);
+			let formData = new FormData(form);
+
+			postData(formData, object)
+				.then(() => {
+					statusMessage.style.color = 'green';
+					statusMessage.innerHTML = "ЗАЯВКА ОТПРАВЛЕНА<br> Мы перезвоним Вам в течении 10 минут!";
+				})
+				.catch(() => {
+					statusMessage.style.color = 'red';
+					statusMessage.innerHTML = "ПРОИЗОШЛА ОШИБКА!<br>Попробуйте, пожалуйста, позже.";
+				})
+				.then(clearInput(curentFormInputs))
+				.then(clearObject(object));
+
 				setTimeout(() => {
 					statusMessage.textContent = '';
-				},3000);
-  	    postData(formData)
-  	      .then(() => statusMessage.textContent = message.loading)
-  	      .then(() => {
-  	        statusMessage.textContent = message.success;
-  	      })
-  	      .catch(() => statusMessage.textContent = message.failure)
-  	      .then(clearInput);
-  	  });
-  	}
+				}, 3000);
+		});
+	}
 
-  	Array.from(forms).forEach(form => {
-  	  sendForm(form);
-    });
+	function postData(data, object = null) {
+		return new Promise(function (resolve, reject) {
+			let request = new XMLHttpRequest();
+			request.open('POST', 'server.php');
+			request.setRequestHeader('Content-Type', 'aplication/json charset=utf-8');
+			let json = formDataToJSON(data, object);
+				
+			request.onreadystatechange = () => {
+				if (request.readyState == 4) {
+					if (request.status == 200) {
+						resolve();
+					} else {
+						reject();
+					}
+				}
+			};
+			request.send(json);
+		});
+	}
 
+	function formDataToJSON(formData, object = null) {
+		const obj = {};
+		formData.forEach((value, key) => {
+			obj[key] = value;
+		});
+		if (object) {
+			return JSON.stringify(Object.assign(object, obj));
+		} else {
+			return JSON.stringify(obj);
+		}
+	}
+
+	function clearInput(inputs) {
+		for (let i = 0; i < inputs.length; i++) {
+			inputs[i].value = '';
+		}
+	}
+		
+	function clearObject(object) {
+		object = {};
+			
+	}
 }
 
 module.exports = form;
