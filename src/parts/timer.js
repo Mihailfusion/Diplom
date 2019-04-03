@@ -1,66 +1,51 @@
+'use strict';
+
 function timer() {
 
-  let deadline = '2019-04-07';
+	const deadLine = '2019-04-05';
+	setClock('timer', deadLine);
 
-  function getTimeRamaining(endtime) {
-    let t = Date.parse(endtime) - Date.parse(new Date()),
-      seconds = Math.floor((t / 1000) % 60),
-      minutes = Math.floor((t / 1000 / 60) % 60),
-      hours = Math.floor((t / 1000 / 60 / 60) % 24);
-    days = Math.floor((t / 1000 / 60 / 60 / 24) % 24);
+	function getTimeRemaining(endTime) {
+		let t = Date.parse(endTime) - Date.parse(new Date());
+		t <= 0 ? t = 0 : t;
+		const seconds = Math.floor(t / 1000 % 60),
+			minutes = Math.floor(t / 1000 / 60 % 60),
+			hours = Math.floor(t / 1000 / (60 * 60) % 24),
+			days = Math.floor(t / 1000 / (60 * 60 * 24));
+		return {
+			'total': t,
+			'days': days,
+			'hours': hours,
+			'minutes': minutes,
+			'seconds': seconds
+		};
+	}
 
-    if (days < 10) {
-      days = `0${days}`;
-    }
+	function setClock(id, endTime) {
+		const timer = document.getElementById(id),
+			days = timer.querySelector('#days'),
+			hours = timer.querySelector('#hours'),
+			minutes = timer.querySelector('#minutes').firstChild,
+			seconds = timer.querySelector('#seconds').firstChild,
+			timeInterval = setInterval(update, 1000);
 
-    if (hours < 10) {
-      hours = `0${hours}`;
-    }
+		function update() {
+			const t = getTimeRemaining(endTime);
 
-    if (minutes < 10) {
-      minutes = `0${minutes}`;
-    }
+			days.textContent = getNormal(t.days);
+			hours.textContent = getNormal(t.hours);
+			minutes.textContent = getNormal(t.minutes);
+			seconds.textContent = getNormal(t.seconds);
 
-    if (seconds < 10) {
-      seconds = `0${seconds}`;
-    }
+			if (t.total <= 0) {
+				clearInterval(timeInterval);
+			}
+		}
+	}
 
-    return {
-      'total': t,
-      'days': days,
-      'hours': hours,
-      'minutes': minutes,
-      'seconds': seconds
-    };
-  }
-
-  function setClock(id, endtime) {
-    let timer = document.getElementById(id),
-      days = timer.querySelector('#days'),
-      hours = timer.querySelector('#hours'),
-      minutes = timer.querySelector('#minutes'),
-      seconds = timer.querySelector('#seconds'),
-      timeInterval = setInterval(updateClock, 1000);
-
-    function updateClock() {
-      let t = getTimeRamaining(endtime);
-      days.textContent = t.days;
-      hours.textContent = t.hours;
-      minutes.textContent = t.minutes;
-      seconds.textContent = t.seconds;
-
-      if (t.total <= 0) {
-        clearInterval(timeInterval);
-        days.textContent = "00";
-        hours.textContent = "00";
-        seconds.textContent = "00";
-        minutes.textContent = "00";
-      }
-    }
-  }
-
-  setClock('timer', deadline);
-
+	function getNormal(number) {
+		return number < 10 ? '0' + number : number;
+	}
 }
 
 module.exports = timer;

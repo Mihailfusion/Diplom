@@ -11,14 +11,23 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
+    "@babel/polyfill": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "babel-cli": "^6.26.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-es6-promise": "^1.1.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-polyfill-loader": "^1.0.1",
+    "core-js": "^3.0.0",
     "es6-promise": "^4.2.6",
     "formdata-polyfill": "^3.0.17",
     "nodelist-foreach-polyfill": "^1.2.0",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
+  },
+  "dependencies": {
+    "babel": "^6.23.0"
   }
 }
